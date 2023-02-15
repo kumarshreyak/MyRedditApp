@@ -23,12 +23,13 @@ fun HomeScreen(
 ) {
     val owner = LocalLifecycleOwner.current
     LaunchedEffect(key1 = null) {
-        homeViewModel.getAccessToken().observe(owner) { response ->
-            if(response is ApiSuccessResponse)
-                Log.d(TAG, "Success")
-            else
-                Log.d(TAG, "Failure")
-        }
+        homeViewModel.getAccessToken()
+//            .observe(owner) { response ->
+//            if(response is ApiSuccessResponse)
+//                Log.d(TAG, "Success")
+//            else
+//                Log.d(TAG, "Failure")
+//        }
     }
     Text(
         text = "Hello",

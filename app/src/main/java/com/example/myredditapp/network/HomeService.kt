@@ -10,19 +10,23 @@ import kotlinx.coroutines.flow.Flow
 import okhttp3.Credentials
 import okhttp3.Headers
 import okhttp3.OkHttpClient
+import okhttp3.RequestBody
 import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Body
+import retrofit2.http.Field
+import retrofit2.http.FormUrlEncoded
 import retrofit2.http.POST
 import javax.inject.Singleton
 
 
 interface HomeService {
 
-    @retrofit2.http.Headers("Content-Type:application/x-www-form-urlencoded")
+    @FormUrlEncoded
     @POST("/api/v1/access_token")
-    fun getAccessToken(@Body request: GetAccessTokenRequest): Flow<ApiResponse<GetAccessTokenResponse>>
+    suspend fun getAccessToken(@Field("grant_type") grant_type: String, @Field("device_id") device_id: String): Response<GetAccessTokenResponse>
 }
 
 @InstallIn(SingletonComponent::class)
@@ -34,6 +38,7 @@ object ServiceModule {
             val req = chain.request()
             val newHeaders = Headers.Builder().addAll(req.headers)
             newHeaders.add("Authorization", Credentials.basic(CLIENT_ID, ""))
+            newHeaders.add("User-Agent"," android:com.example.myshrekapp:v1.0.0 (by /u/unbatedfall)")
             val newReq = req.newBuilder().headers(newHeaders.build()).build()
             chain.proceed(newReq)
         }
@@ -50,7 +55,6 @@ object ServiceModule {
             .baseUrl(HOME_BASE_URL)
             .client(baseClient)
             .addConverterFactory(GsonConverterFactory.create())
-            .addCallAdapterFactory(ApiResponseCallAdapterFactory())
             .build()
             .create(HomeService::class.java)
     }

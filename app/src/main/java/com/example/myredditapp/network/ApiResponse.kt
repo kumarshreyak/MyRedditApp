@@ -26,6 +26,7 @@ sealed class ApiResponse<T>() {
                 return ApiErrorResponse(errorMsg ?: "Something went wrong")
             }
         }
+
     }
 }
 
