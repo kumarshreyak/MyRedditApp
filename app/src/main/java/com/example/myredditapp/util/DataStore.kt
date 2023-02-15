@@ -5,6 +5,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
+import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import dagger.Component
 import kotlinx.coroutines.flow.catch
@@ -32,6 +33,6 @@ suspend fun <T : Any> DataStore<Preferences>.readData(key: Preferences.Key<T>) {
         }.firstOrNull()
 }
 
-const val ACCESS_TOKEN = "ACCESS_TOKEN"
+val ACCESS_TOKEN = stringPreferencesKey("ACCESS_TOKEN")
 
 
