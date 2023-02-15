@@ -33,3 +33,4 @@ sealed class ApiResponse<T>() {
 class ApiSuccessResponse<T>(val body: T): ApiResponse<T>()
 class ApiErrorResponse<T>(val errorMessage: String): ApiResponse<T>()
 class ApiEmptyResponse<T>: ApiResponse<T>()
+class ApiLoadingResponse<T>: ApiResponse<T>()

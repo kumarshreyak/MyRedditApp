@@ -9,6 +9,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.myredditapp.network.ApiLoadingResponse
 import com.example.myredditapp.network.ApiSuccessResponse
 import com.example.myredditapp.util.ACCESS_TOKEN
 import com.example.myredditapp.util.dataStore
@@ -24,12 +25,14 @@ fun HomeScreen(
     val owner = LocalLifecycleOwner.current
     LaunchedEffect(key1 = null) {
         homeViewModel.getAccessToken()
-//            .observe(owner) { response ->
-//            if(response is ApiSuccessResponse)
-//                Log.d(TAG, "Success")
-//            else
-//                Log.d(TAG, "Failure")
-//        }
+            .observe(owner) { response ->
+            if(response is ApiLoadingResponse)
+                Log.d(TAG, "Loading")
+            else if(response is ApiSuccessResponse)
+                Log.d(TAG, "Success")
+            else
+                Log.d(TAG, "Failure")
+        }
     }
     Text(
         text = "Hello",

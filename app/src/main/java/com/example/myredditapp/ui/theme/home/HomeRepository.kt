@@ -1,5 +1,6 @@
 package com.example.myredditapp.ui.theme.home
 
+import com.example.myredditapp.network.ApiLoadingResponse
 import com.example.myredditapp.network.HomeService
 import com.example.myredditapp.network.ApiResponse
 import com.example.myredditapp.network.handleApi
@@ -21,6 +22,7 @@ class HomeRepository @Inject constructor(
         )
     ): Flow<ApiResponse<GetAccessTokenResponse>> {
         return flow {
+            emit(ApiLoadingResponse())
             emit(handleApi { homeService.getAccessToken(grant_type = request.grant_type, device_id = request.device_id) })
         }
     }
