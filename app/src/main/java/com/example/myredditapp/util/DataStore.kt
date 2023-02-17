@@ -23,8 +23,8 @@ suspend fun <T : Any> DataStore<Preferences>.writeData(key: Preferences.Key<T>, 
     }
 }
 
-suspend fun <T : Any> DataStore<Preferences>.readData(key: Preferences.Key<T>) {
-    data
+suspend fun <T : Any> DataStore<Preferences>.readData(key: Preferences.Key<T>): T? {
+    return data
         .catch { e ->
             e.printStackTrace()
             emit(emptyPreferences())

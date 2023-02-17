@@ -21,6 +21,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        initApp()
         setContent {
             MyRedditAppTheme {
                 // A surface container using the 'background' color from the theme
@@ -37,10 +38,14 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    private fun initApp() {
+
+    }
+
     @Composable
     private fun SetupNavGraph(navController: NavHostController) {
         NavHost(navController = navController, startDestination = "home") {
-            composable("home") { HomeScreen() }
+            composable("home") { HomeScreen(navController = navController) }
         }
     }
 }

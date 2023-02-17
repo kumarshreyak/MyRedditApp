@@ -1,42 +1,53 @@
 package com.example.myredditapp.ui.theme.home
 
-import android.util.Log
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.myredditapp.network.ApiLoadingResponse
-import com.example.myredditapp.network.ApiSuccessResponse
-import com.example.myredditapp.util.ACCESS_TOKEN
-import com.example.myredditapp.util.dataStore
-import com.example.myredditapp.util.writeData
-import kotlinx.coroutines.flow.collectLatest
+import androidx.navigation.NavController
+import com.example.myredditapp.network.models.PokemonList
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 
 const val TAG = "HomeScreen"
+
 @Composable
 fun HomeScreen(
-    homeViewModel: HomeViewModel = hiltViewModel()
+    homeViewModel: HomeViewModel = hiltViewModel(),
+    navController: NavController
 ) {
-    val owner = LocalLifecycleOwner.current
     LaunchedEffect(key1 = null) {
-        homeViewModel.getAccessToken()
-            .observe(owner) { response ->
-            if(response is ApiLoadingResponse)
-                Log.d(TAG, "Loading")
-            else if(response is ApiSuccessResponse)
-                Log.d(TAG, "Success")
-            else
-                Log.d(TAG, "Failure")
+        withContext(Dispatchers.IO) {
+            homeViewModel.getPokemon()
         }
     }
+
+    LazyColumn {
+        itemsIndexed(homeViewModel.pokemons) { i, pokemon ->
+            PokemonRow(pokemon)
+        }
+    }
+}
+
+@Composable
+fun PokemonRow(pokemon: PokemonList.PokemonItem) {
     Text(
-        text = "Hello",
+        text = pokemon.name.orEmpty(),
         style = MaterialTheme.typography.h3,
-        color = MaterialTheme.colors.onSurface
+        color = MaterialTheme.colors.onSurface,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
     )
+    Spacer(modifier = Modifier.height(16.dp))
 }

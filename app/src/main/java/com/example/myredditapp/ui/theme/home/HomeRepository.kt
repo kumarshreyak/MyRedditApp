@@ -1,29 +1,49 @@
 package com.example.myredditapp.ui.theme.home
 
-import com.example.myredditapp.network.ApiLoadingResponse
-import com.example.myredditapp.network.HomeService
-import com.example.myredditapp.network.ApiResponse
-import com.example.myredditapp.network.handleApi
-import com.example.myredditapp.network.models.GetAccessTokenRequest
-import com.example.myredditapp.network.models.GetAccessTokenResponse
+import android.util.Log
+import com.example.myredditapp.network.*
+import com.example.myredditapp.network.db.HomeRoomDataSource
+import com.example.myredditapp.network.models.ListingRequest
+import com.example.myredditapp.network.models.PokemonList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import okhttp3.MultipartBody
-import java.util.*
 import javax.inject.Inject
 
 class HomeRepository @Inject constructor(
     private val homeService: HomeService,
+    private val homeRoomDataSource: HomeRoomDataSource
 ) {
-    suspend fun getAccessToken(
-        request: GetAccessTokenRequest = GetAccessTokenRequest(
-            grant_type = "https://oauth.reddit.com/grants/installed_client",
-            device_id = "DO_NOT_TRACK_THIS_DEVICE",
-        )
-    ): Flow<ApiResponse<GetAccessTokenResponse>> {
+    suspend fun getPokemonAndRefresh(
+        request: ListingRequest = ListingRequest()
+    ): Flow<ApiResponse<PokemonList>> {
         return flow {
             emit(ApiLoadingResponse())
-            emit(handleApi { homeService.getAccessToken(grant_type = request.grant_type, device_id = request.device_id) })
+            homeRoomDataSource.getAllPokemon().collect { pokemons ->
+                Log.d("HomeRepo", "Data from db - ${pokemons.size}")
+                emit(
+                    ApiSuccessResponse(
+                        body = PokemonList(
+                            results = pokemons,
+                            count = pokemons.size,
+                            next = null,
+                            previous = null
+                        )
+                    )
+                )
+            }
+
+            val response = handleApi {
+                homeService.getPokemon(
+                    limit = request.limit,
+                    offset = request.offset
+                )
+            }
+            if (response is ApiSuccessResponse) {
+                if(!response.body.results.isNullOrEmpty()) {
+                    Log.d("HomeRepo", "Data updated - ${response.body.results.size}")
+                    homeRoomDataSource.insertAllPokemon(response.body.results)
+                }
+            }
         }
     }
 }
