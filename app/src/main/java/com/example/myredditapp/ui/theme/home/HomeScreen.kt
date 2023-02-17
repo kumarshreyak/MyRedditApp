@@ -43,11 +43,10 @@ fun HomeScreen(
 fun PokemonRow(pokemon: PokemonList.PokemonItem) {
     Text(
         text = pokemon.name.orEmpty(),
-        style = MaterialTheme.typography.h3,
+        style = MaterialTheme.typography.h5,
         color = MaterialTheme.colors.onSurface,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp)
+            .padding(16.dp)
     )
-    Spacer(modifier = Modifier.height(16.dp))
 }
