@@ -12,8 +12,7 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(private val homeRepository: HomeRepository): ViewModel() {
 
-    var pokemons = mutableStateListOf<PokemonList.PokemonItem>()
-        private set
+    val pokemons = mutableStateListOf<PokemonList.PokemonItem>()
 
     suspend fun getPokemon() {
         homeRepository.getPokemonAndRefresh().collect { response ->
