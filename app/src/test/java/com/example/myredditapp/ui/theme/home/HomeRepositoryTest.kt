@@ -1,12 +1,10 @@
 package com.example.myredditapp.ui.theme.home
 
-import com.example.myredditapp.network.ApiErrorResponse
 import com.example.myredditapp.network.ApiLoadingResponse
 import com.example.myredditapp.network.ApiSuccessResponse
 import com.example.myredditapp.network.HomeService
 import com.example.myredditapp.network.db.HomeRoomDataSource
 import com.example.myredditapp.network.models.ListingRequest
-import kotlinx.coroutines.flow.count
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
@@ -14,12 +12,10 @@ import kotlinx.coroutines.runBlocking
 import org.junit.Test
 
 
-
 internal class HomeRepositoryTest {
 
-    var fakeHomeService: HomeService = FakeHomeService()
-
-    var fakeHomeRoomDataSource: HomeRoomDataSource = FakeHomeRoomDataSource()
+    private var fakeHomeService: HomeService = FakeHomeService() // = mock(HomeService::class.java)
+    private var fakeHomeRoomDataSource: HomeRoomDataSource = FakeHomeRoomDataSource()  // = mock(HomeRoomDataSource::class.java)
 
     var repo: HomeRepository = HomeRepository(fakeHomeService, fakeHomeRoomDataSource)
 
@@ -59,6 +55,11 @@ internal class HomeRepositoryTest {
     fun getPokemonAndRefresh_returns_SUCCESS() {
         runBlocking {
             repo.getPokemonAndRefresh(ListingRequest()).drop(1).first { result ->
+                assert(result is ApiSuccessResponse)
+                true
+            }
+
+            repo.getPokemonAndRefresh(ListingRequest(0, 0)).drop(2).first { result ->
                 assert(result is ApiSuccessResponse)
                 true
             }

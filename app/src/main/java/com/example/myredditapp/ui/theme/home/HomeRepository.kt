@@ -33,7 +33,7 @@ class HomeRepository @Inject constructor(
                 )
                 true
             }
-            val response = handleApi {
+            val response: ApiResponse<PokemonList> = handleApi {
                 homeService.getPokemon(
                     limit = request.limit,
                     offset = request.offset
@@ -44,6 +44,9 @@ class HomeRepository @Inject constructor(
                     Log.d("HomeRepo", "Data updated - ${response.body.results.size}")
                     homeRoomDataSource.insertAllPokemon(response.body.results)
                 }
+            } else if(response is ApiErrorResponse) {
+                homeRoomDataSource.insertAllPokemon(listOf())
+                emit(response)
             }
             dbflow.collect { pokemons ->
                 Log.d("HomeRepo", "Data from db - ${pokemons.size}")
